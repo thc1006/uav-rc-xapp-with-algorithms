@@ -1,1 +1,0 @@
-"""UAV policy xApp package."""

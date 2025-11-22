@@ -171,6 +171,19 @@ def path_aware_rc_policy(
             reason_parts.append("Serving cell matches flight-plan segment.")
     else:
         reason_parts.append("No active flight-plan segment; using reactive policy only.")
+        # Apply reactive handover logic when no flight plan
+        if (
+            radio.prb_utilization_serving > overloaded_threshold
+            and radio.rsrp_best_neighbor > radio.rsrp_serving + hysteresis_db
+            and radio.neighbor_cell_ids
+        ):
+            target_cell = radio.neighbor_cell_ids[0]
+            reason_parts.append(
+                f"Reactive handover: serving overloaded (util={radio.prb_utilization_serving:.1%}), "
+                f"neighbor stronger by {radio.rsrp_best_neighbor - radio.rsrp_serving:.1f} dB."
+            )
+        else:
+            reason_parts.append("Staying on serving cell (not overloaded or neighbors not clearly better).")
 
     target_slice: Optional[str]
     if uav.slice_id is not None:

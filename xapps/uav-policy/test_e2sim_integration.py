@@ -261,7 +261,8 @@ def test_decision_history():
         return
 
     try:
-        history = response.json()
+        data = response.json()
+        history = data.get("decisions", [])
     except Exception as e:
         print(f"  ERROR: Cannot parse response: {e}")
         return
